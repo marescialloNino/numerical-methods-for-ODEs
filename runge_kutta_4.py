@@ -1,44 +1,29 @@
 from math import *
+import pandas as pd
+import matplotlib.pyplot as plt
 
-# Definition of Runge Kutta 4 stages method
-def rk4(f, exact_sol, t, y, T, h, analytical = False, number_of_estimates = 0):
+'''
+	Definition of Runge Kutta 4 stages method
+ 	This function takes as parameters:
+ 	f --> f(t,y)=dy/dt
+	sol --> the analytical solution of the ODE
+	t --> initial time t0 
+	y --> initial value y0
+	T --> final time T
+ 	h --> stepsize 
+	The function returns a dataframe with 4 columns : tn, yn, y(tn), error
+'''
 
-	# number_of_estimates is how many estimated solutions you want the function to return in an array,
-	# for example if number_of_estimates == 2  --> [y1,y2] , if number_of_estimates == 1 --> [y1],
-	# excluding y0, which is given by the initial problem.
-	# if a number of estimates greater then zero is given the function returns the required number of 
-	# estimates to be used somewhere else, otherwise it will print the estimate, exact solution
-	# and error (if the analytical sol is given) for each step.
-
-	# n: number of steps
-	n = int((T-t)/h)
-
-	if number_of_estimates > 0:
-		estimates = []
-		for i in range(number_of_estimates):
-			k1 = h*f(t, y)
-			k2 = h*f(t + h/2, y + k1/2)
-			k3 = h*f(t + h/2, y + k2/2)
-			k4 = h*f(t + h, y + k3)
-			y = y + (k1 + 2*k2 + 2*k3 + k4)/6
-			t += h
-			estimates.append(y)
-		print("estimates :", estimates)
-		return estimates[1:]
+def rk4(f, t, y, T, h, sol = None):
 	
-	else:
-
-		separator = "-"*100 if analytical else "-"*40
-
-		# analytical == true --> compare RK-4 with the exact solution
-		if analytical:
-			print(f'\nt\t\t|\tEstimate\t\t|\tExact\t\t\t|\tError\n{separator}')
-			print(f'{t:.3f}\t\t|\t{y:.9f}\t\t|\t{exact_sol(t):.9f}\t\t|\t{abs(exact_sol(t)-y):.9f}')
-		# analytical == false --> estimate an ODE with RK-4
-		else:
-			print(f'\nt\t\t|\tEstimate\n{separator}')
-			print(f'{t:.3f}\t\t|\t{y:.9f}')
-
+		# n: number of steps
+		n = int((T-t)/h)
+		# define dataframe to store data
+		results = []
+		#columns = ["t", "Estimate", "Exact", "Error"]
+		#results_df = pd.DataFrame(columns=columns)
+		#first_row = pd.DataFrame({ 't': [t], 'Estimate': [y], "Exact":[actual], "Error": [error] })
+		# loop to calculate the values of the parameters k at each step
 		for i in range(n):
 			k1 = h*f(t, y)
 			k2 = h*f(t + h/2, y + k1/2)
@@ -46,28 +31,52 @@ def rk4(f, exact_sol, t, y, T, h, analytical = False, number_of_estimates = 0):
 			k4 = h*f(t + h, y + k3)
 			y = y + (k1 + 2*k2 + 2*k3 + k4)/6
 			t += h
-			actual = exact_sol(t)
-			print(f'{t:.3f}\t\t|\t{y:.9f}', end = '')
-			print(f'\t\t|\t{actual:.9f}\t\t|\t{abs(actual-y):.9f}' if analytical else '')
+			if sol is not None:
+				actual = sol(t)
+				error = abs(actual - y)
+				results.append([t, y, actual, error])
+				#df_new_row = pd.DataFrame({ 't': [t], 'Estimate': [y], "Exact":[actual], "Error": [error] })
+			else:
+				results.append([t, y])
+				#df_new_row = pd.DataFrame({ 't': [t], 'Estimate': [y]})
+			#results_df = pd.concat([results_df, df_new_row],ignore_index=True)
+			
 
-		print(separator)
+		if sol is not None:
+			columns = ["t", "Estimate", "Exact", "Error"]
+		else:
+			columns = ["t", "Estimate"]
+
+		return pd.DataFrame(results, columns=columns)	 
 
 # main function depending on the ODE to solve
+# returns the an error dataframe and a log log plot of the final error
+# in function of the number of steps n
 def main():
 
 	# Define these functions depending on the problem.
 	f = lambda t, y: -5*y
 	exact_sol= lambda t: exp(-5*t)
+	t0 = 0
+	y0 = 1
+	T = 1
+	# Define 
+	error_columns = ["h", "n", "Final Error"]
+	error_df = pd.DataFrame(columns=error_columns)
 
-	choice = int(input(" To estimate with RK-4 enter [1] \n To compare analytical solution with RK-4 estimate enter [2] \n"))
-	if choice == 2:
-		print("Make sure you have defined the analytic function correctly.")
+	steps = [2**(-k) for k in range(5,11)]
 
-	t0 = float(input("t0 = "))
-	y0 = float(input("y0 = "))
-	T = float(input("T = "))
-	h = float(input("Step-Size = "))
-	rk4(f, exact_sol, t0, y0, T, h, choice == 2)
+	for h in steps:
+		
+		results = rk4(f, t0, y0, T, h, exact_sol) 
+		final_error = results["Error"].iat[-1]	
+		error_df_new_row = pd.DataFrame({'h':[h], "n":[int((T-t0)/h)], "Final Error":[final_error]})
+		error_df = pd.concat([error_df, error_df_new_row], ignore_index=True)
+		#print(results)
+
+	print(error_df)
+	plt.loglog(error_df.n, error_df["Final Error"])
+	plt.show()
 
 if __name__ == '__main__':
 	main()
