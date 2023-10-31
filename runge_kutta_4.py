@@ -39,9 +39,9 @@ def rk4(f, t, y, T, h, sol = None):
 				results.append([t, y])		
 
 		if sol is not None:
-			columns = ["t", "Estimate", "Exact", "Error"]
+			columns = ["t", "y", "exact", "error"]
 		else:
-			columns = ["t", "Estimate"]
+			columns = ["t", "y"]
 
 		return pd.DataFrame(results, columns=columns)	 
 
@@ -69,12 +69,12 @@ def excersise2():
 	# calculate rk4 results at each given step, storing the error at final time in the error table.
 	for h in steps:
 		results = rk4(f, t0, y0, T, h, exact_sol) 
-		final_error = results["Error"].iat[-1]	
+		final_error = results["error"].iat[-1]	
 		error_df_new_row = pd.DataFrame({'h':[h], "n":[int((T-t0)/h)], "final_error":[final_error]})
 		error_df = pd.concat([error_df, error_df_new_row], ignore_index=True)
-
+		
 	print(error_df)
-	plt.loglog(error_df.n, error_df["Final Error"])
+	plt.loglog(error_df.n, error_df["final_error"])
 	plt.show()
 
 if __name__ == '__main__':
