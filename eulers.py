@@ -1,90 +1,61 @@
 from math import *
+import pandas as pd
 
-def analytical_eulers(f, f_actual, t, y, p, h = None, n = None):
-	if h == None:
-		h = (p-t)/n
-	if n == None:
-		n = int((p-t)/h)
+def forward_euler(f, t, y, T, h, sol = None):
+			
+		# n: number of steps
+		n = int((T-t)/h)
 
-	print(f't\t\t|\tEstimate\t\t|\tExact\t\t\t|\tError')
-	print("-"*100)
-	print(f'{t:.3f}\t\t|\t{y:.9f}\t\t|\t{f_actual(t):.9f}\t\t|\t{abs(f_actual(t)-y):.9f}')
+		# define array to store data
+		results = []
 
-	for i in range(n):
-		y = y + h*f(t, y)
-		t += h
-		actual = f_actual(t)
-		print(f'{t:.3f}\t\t|\t{y:.9f}\t\t|\t{actual:.9f}\t\t|\t{abs(actual-y):.9f}')
+		# loop to calculate estimates at each step
+		for i in range(n):
+			y = y + h*f(t,y)
+			t += h
+			# if analytical solution is given --> compare estimate ad exact solution
+			if sol is not None:
+				actual = sol(t)
+				error = abs(actual - y)
+				results.append([t, y, actual, error])
+			# if not, just estimate the solution
+			else:
+				results.append([t, y])		
 
-	print("-"*100)
+		if sol is not None:
+			columns = ["t", "Estimate", "Exact", "Error"]
+		else:
+			columns = ["t", "Estimate"]
 
-def modified_eulers(f, f_actual, t, y, p, h = None, n = None):
-	if h == None:
-		h = (p-t)/n
-	if n == None:
-		n = int((p-t)/h)
+		return pd.DataFrame(results, columns=columns)
 
-	print(f't\t\t|\tEstimate\t\t|\tExact\t\t\t|\tError')
-	print("-"*100)
-	print(f'{t:.3f}\t\t|\t{y:.9f}\t\t|\t{f_actual(t):.9f}\t\t|\t{abs(f_actual(t)-y):.9f}')
+def improved_euler(f, t, y, T, h, sol = None):
+			
+		# n: number of steps
+		n = int((T-t)/h)
 
-	for i in range(n):
-		func_value = f(t, y)
-		t += h
-		next_value = f(t, y + h*func_value)
-		y = y + h/2*(func_value + next_value)
-		actual_value = f_actual(t)
-		print(f'{t:.3f}\t\t|\t{y:.9f}\t\t|\t{actual_value:.9f}\t\t|\t{abs(actual_value-y):.9f}')
-	print("-"*100)
+		# define array to store data
+		results = []
 
-def eulers_estimate(f, t, y, p, h = None, n = None):
-	if h == None:
-		h = (p-t)/n
-	if n == None:
-		n = int((p-t)/h)
+		# loop to calculate estimates at each step
+		for i in range(n):
+			func_value = f(t, y)
+			t += h
+			next_value = f(t, y + h*func_value)
+			y = y + h/2*(func_value + next_value)
+			# if analytical solution is given --> compare estimate ad exact solution
+			if sol is not None:
+				actual = sol(t)
+				error = abs(actual - y)
+				results.append([t, y, actual, error])
+			# if not, just estimate the solution
+			else:
+				results.append([t, y])		
 
-	print(f't\t\t|\tEstimate')
-	print('-'*40)
+		if sol is not None:
+			columns = ["t", "Estimate", "Exact", "Error"]
+		else:
+			columns = ["t", "Estimate"]
 
-	print(f'{t:.3f}\t\t|\t{y:.9f}')
-
-	for i in range(n):
-		y = y + h*f(t, y)
-		t += h
-		print(f'{t:.3f}\t\t|\t{y:.9f}')
-	print('-'*40)
-
-def main():
-	option = int(input("Choose\n1) Euler's Approximation\n2) Euler's Analytical\n3) Modified Euler's\n"))
-
-	# Define these functions depending on the problem.
-	# f : function representing the first order ODE
-	# exact_solution : analytical solution of the ODE
-	f = lambda t, y: -20*(y-t*t) + 2*t
-	exact_solution = lambda t: t*t + exp(-20*t)/3
-
-	t0 = float(input("t0 = "))
-	t = t0
-	y0 = float(input("y0 = "))
-	p = float(input("T = "))
-	h = ""
-	n = ""
-	while h.strip() == "" and n.strip() == "":
-		h = input("Enter H [Leave blank if you want to enter N]: ")
-		n = input("Enter N [Leave blank if H already inputted]: ")
-	if h == "":
-		n = int(n)
-		h = None
-	else:
-		h = float(h)
-		n = None
-	if option == 1:
-		eulers_estimate(f, t0, y0, p, h, n)
-	elif option == 2:
-		analytical_eulers(f, exact_solution, t0, y0, p, h, n)
-	else:
-		modified_eulers(f, exact_solution, t0, y0, p, h, n)
-
-if __name__ == '__main__':
-	main()
+		return pd.DataFrame(results, columns=columns)	 
 	
