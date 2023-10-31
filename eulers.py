@@ -58,19 +58,3 @@ def improved_euler(f, t, y, T, h, sol = None):
 			columns = ["t", "y"]
 
 		return pd.DataFrame(results, columns=columns)	 
-	
-def excersise2():
-
-	# Define these functions depending on the problem to solve.
-	f = lambda t, y: -5*y
-	exact_sol= lambda t: exp(-5*t)
-	t0 = 0
-	y0 = 1
-	T = 1
-	h=0.05
-
-	results = forward_euler(f,t0,y0,t0+h,h)
-	print(results.y.iat[0])
-
-if __name__ == '__main__':
-	excersise2()
