@@ -1,4 +1,7 @@
 from math import *
+import pandas as pd
+from runge_kutta_4 import rk4
+from eulers import forward_euler
 
 def milne_simpson(f, f_actual, t, y, p, h):
 	n = int((p-t)/h)
@@ -23,12 +26,35 @@ def milne_simpson(f, f_actual, t, y, p, h):
 		print(f'{time[i]:.3f}\t\t|\t{y_values[i]:.9f}\t\t|\t{f_actual(time[i]):.9f}')
 	print("-"*70)
 
-def rk4(f, t, y):
-	k1 = h*f(t, y)
-	k2 = h*f(t + h/2, y + k1/2)
-	k3 = h*f(t + h/2, y + k2/2)
-	k4 = h*f(t + h, y + k3)
-	return y + (k1 + 2*k2 + 2*k3 + k4)/6
+def simpson(f, t, y0, y1, T, h, sol = None):
+	
+		# n: number of steps
+		n = int((T-t)/h)
+		time = [t+i*h for i in range(n+1)]
+		# define array to store data
+		results = []
+
+		f0 = f(t,y0)
+		 
+		# loop to calculate the values of the parameters k at each step
+		for i in range(n):
+			y = y + (h/3)*(f(t,y) + 4*f(t+h,))
+			# if analytical solution is given --> compare estimate ad exact solution
+			if sol is not None:
+				actual = sol(t)
+				error = abs(actual - y)
+				results.append([t, y, actual, error])
+			# if not, just estimate the solution
+			else:
+				results.append([t, y])		
+
+		if sol is not None:
+			columns = ["t", "Estimate", "Exact", "Error"]
+		else:
+			columns = ["t", "Estimate"]
+
+		return pd.DataFrame(results, columns=columns)	
+
 
 if __name__ == '__main__':
 
