@@ -1,5 +1,6 @@
 from math import *
 import pandas as pd
+import matplotlib.pyplot as plt
 from runge_kutta_4 import rk4
 from eulers import forward_euler
 
@@ -62,5 +63,14 @@ if __name__ == '__main__':
 
 	
 	result = pd.concat([result_1, df2_extracted, df3_extracted], axis=1)
-
+	print('''Results obtained with Simpsons method using different first value estimates:
+	   		 y --> y1 computed as the exact solution at time t1
+	   		 y_rk --> y1 computed with rk4
+	   		 y_eul --> y1 computed with forward euler
+	   ''')
 	print(result)
+
+	result.plot(x='t', y=['y','y_rk','y_eul'], kind='line')
+	result.plot(x='t', y=[ 'error','error_rk','error_eul'], kind='line')
+	plt.show()
+
