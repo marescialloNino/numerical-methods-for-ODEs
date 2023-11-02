@@ -3,6 +3,10 @@ import pandas as pd
 from runge_kutta_4 import rk4
 from eulers import forward_euler
 
+""" 
+	method to solve the problem dy/dt = -5y ; y(0) = 1.
+	Simpson equation can be solved explicitly as the test function is linear.
+"""
 def simpson_excersise(t, y0, y1, T, h ):
 		
 		f = lambda t, y: -5*y
@@ -24,17 +28,14 @@ def simpson_excersise(t, y0, y1, T, h ):
 
 			y2 = (y0 + (h/3)*(f0 + 4*f1))/(1+(5/3)*h)
 			
-
 			actual = sol(t + 2*h)
 			error = abs(actual - y2)
 			results.append([t + 2*h, actual,  y2, error])
-			
 			
 			t = tn1
 			y0 = y1
 			y1 = y2
 		
-
 		columns = ["t", "exact", "y", "error"]
 		return pd.DataFrame(results, columns=columns)	
 
@@ -52,8 +53,6 @@ if __name__ == '__main__':
 	euler_1 = forward_euler(f,t,y0,t+h,h).y.iat[0]
 	rk_1 = rk4(f,t,y0,t+h,h).y.iat[0]
 
-	y1=[exact_1, rk_1,euler_1]
-
 	result_1 = simpson_excersise(t, y0, exact_1, T, h )
 	result_2 = simpson_excersise(t, y0, euler_1, T, h )
 	result_3 = simpson_excersise(t, y0, rk_1, T, h )
@@ -65,16 +64,3 @@ if __name__ == '__main__':
 	result = pd.concat([result_1, df2_extracted, df3_extracted], axis=1)
 
 	print(result)
-	
-
-
-""" 	f = lambda t, y: -5*y + 5*t*t + 2*t
-
-	f_actual = lambda t: t*t + exp(-5*t)/3
-
-	t = float(input("t0: "))
-	y = float(input("y0: "))
-	p = float(input("Evaluation point: "))
-	h = float(input("Step size: "))
-
-	milne_simpson(f, f_actual, t, y, p, h) """
