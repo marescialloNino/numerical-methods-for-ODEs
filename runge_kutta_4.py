@@ -57,7 +57,7 @@ def excersise2():
 	exact_sol= lambda t: exp(-5*t)
 	t0 = 0
 	y0 = 1
-	T = 1
+	T = 5
 	
 	# define table of stepsize, number of steps and error.
 	error_columns = ["h", "n", "final_error"]
@@ -72,9 +72,16 @@ def excersise2():
 		final_error = results["error"].iat[-1]	
 		error_df_new_row = pd.DataFrame({'h':[h], "n":[int((T-t0)/h)], "final_error":[final_error]})
 		error_df = pd.concat([error_df, error_df_new_row], ignore_index=True)
+
+	result = rk4(f, t0, y0, T, steps[0], exact_sol) 
 		
 	print(error_df)
 	plt.loglog(error_df.n, error_df["final_error"])
+
+	plt.show()
+	plt.plot(result.t , result.exact)
+	plt.plot(result.t , result.y)
+
 	plt.show()
 
 if __name__ == '__main__':
