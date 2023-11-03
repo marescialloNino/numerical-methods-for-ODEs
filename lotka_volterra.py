@@ -2,8 +2,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-# Defining the General Model
-# X = [x,y]
 
 def Lotka_Volterra(X,alpha,beta,gamma,delta):
    

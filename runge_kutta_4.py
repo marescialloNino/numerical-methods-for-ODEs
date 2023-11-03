@@ -3,7 +3,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 
 '''
-	Definition of Runge Kutta 4 stages method
+	Definition of Runge Kutta 4 stages method for ODEs (not systems of ODEs)
  	This function takes as parameters:
  	f --> f(t,y)=dy/dt
 	sol --> the analytical solution of the ODE
@@ -79,6 +79,7 @@ def excersise2():
 	plt.loglog(error_df.n, error_df["final_error"])
 
 	plt.show()
+
 	plt.plot(result.t , result.exact)
 	plt.plot(result.t , result.y)
 
