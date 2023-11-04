@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 
 def Lotka_Volterra(X,alpha,beta,gamma,delta):
    
-    Xdot = np.array([alpha*X[0] - beta*X[0]*X[1], delta*X[0]*X[1] - gamma*X[1]])
+    Xdot = np.array([alpha*X[0] - beta*X[0]*X[1], gamma*X[0]*X[1] - delta*X[1]])
     
     return Xdot
 
@@ -48,8 +48,8 @@ tf = 300
 h = 0.001
 alpha = 0.2
 beta = 0.01
-gamma = 0.07
-delta = 0.004
+gamma = 0.004
+delta = 0.07
 x0 = 19
 y0 = 22
 f = lambda t,x : Lotka_Volterra(x, alpha, beta, gamma, delta)        # lotka volterra problem 
@@ -69,8 +69,8 @@ plt.legend()
 
 plt.subplot(1, 2, 2)
 plt.plot(X[0,:], X[1,:])
-plt.xlabel("Preys")
-plt.ylabel("Predators")
+plt.xlabel("Rabbits")
+plt.ylabel("Foxes")
 plt.grid()
 
 plt.show()
