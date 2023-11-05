@@ -9,7 +9,7 @@ import matplotlib.pyplot as plt
 	method to solve the problem dy/dt = -5y ; y(0) = 1.
 	Simpson equation can be solved explicitly as the test function is linear.
 """
-def simpson_excersise(t, y0, y1, T, h ):
+def simpsons(t, y0, y1, T, h ):
 		
 		f = lambda t, y: -5*y
 		sol = lambda t: exp(-5*t)
@@ -69,9 +69,9 @@ if __name__ == '__main__':
 	print(euler_1)
 	print(rk_1)
 
-	result_1 = simpson_excersise(t, y0, exact_1, T, h )
-	result_2 = simpson_excersise(t, y0, euler_1, T, h )
-	result_3 = simpson_excersise(t, y0, rk_1, T, h )
+	result_1 = simpsons(t, y0, exact_1, T, h )
+	result_2 = simpsons(t, y0, euler_1, T, h )
+	result_3 = simpsons(t, y0, rk_1, T, h )
 	
 	df2_extracted = result_2[['y', 'error']].rename(columns={'y': 'y_rk', 'error': 'error_rk'})
 	df3_extracted = result_3[['y', 'error']].rename(columns={'y': 'y_eul', 'error': 'error_eul'})
