@@ -73,8 +73,8 @@ if __name__ == '__main__':
 	result_2 = simpsons(t, y0, euler_1, T, h )
 	result_3 = simpsons(t, y0, rk_1, T, h )
 	
-	df2_extracted = result_2[['y', 'error']].rename(columns={'y': 'y_rk', 'error': 'error_rk'})
-	df3_extracted = result_3[['y', 'error']].rename(columns={'y': 'y_eul', 'error': 'error_eul'})
+	df2_extracted = result_2[['y', 'error']].rename(columns={'y': 'y_eul', 'error': 'error_eul'})
+	df3_extracted = result_3[['y', 'error']].rename(columns={'y': 'y_rk', 'error': 'error_rk'})
 
 	
 	result = pd.concat([result_1, df2_extracted, df3_extracted], axis=1)
