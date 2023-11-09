@@ -53,11 +53,11 @@ def rk4(f, t, y, T, h, sol = None):
 def excersise2():
 
 	# Define these functions depending on the problem to solve.
-	f = lambda t, y: -5*y
-	exact_sol= lambda t: exp(-5*t)
+	f = lambda t, y: -10*(y**2)
+	exact_sol= lambda t: 1/(10*t + 1)
 	t0 = 0
 	y0 = 1
-	T = 5
+	T = 2
 	
 	# define table of stepsize, number of steps and error.
 	error_columns = ["h", "n", "final_error"]
@@ -76,7 +76,7 @@ def excersise2():
 	result = rk4(f, t0, y0, T, steps[0], exact_sol) 
 		
 	print(error_df)
-	plt.loglog(error_df.n, error_df["final_error"])
+	plt.loglog(error_df.n, error_df["final_error"], marker='o', linestyle='', markersize=4)
 
 	plt.show()
 
