@@ -60,14 +60,14 @@ X, t = RK4(f, X0, t0, tf, h)
 
 # Plotting the Results
 
-plt.subplot(1, 2, 1)
+
 plt.plot(t, X[0,:], "r", label="Rabbits")
 plt.plot(t, X[1,:], "b", label="Foxes")
 plt.xlabel("Time (t)")
 plt.grid()
 plt.legend()
+plt.show()
 
-plt.subplot(1, 2, 2)
 plt.plot(X[0,:], X[1,:])
 plt.xlabel("Rabbits")
 plt.ylabel("Foxes")

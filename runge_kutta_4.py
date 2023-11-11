@@ -1,6 +1,7 @@
 from math import *
 import pandas as pd
 import matplotlib.pyplot as plt
+import numpy as np
 
 '''
 	Definition of Runge Kutta 4 stages method for ODEs (not systems of ODEs)
@@ -33,6 +34,7 @@ def rk4(f, t, y, T, h, sol = None):
 			if sol is not None:
 				actual = sol(t)
 				error = abs(actual - y)
+				
 				results.append([t, y, actual, error])
 			# if not, just estimate the solution
 			else:
@@ -42,8 +44,10 @@ def rk4(f, t, y, T, h, sol = None):
 			columns = ["t", "y", "exact", "error"]
 		else:
 			columns = ["t", "y"]
+		return pd.DataFrame(results, columns=columns)	
 
-		return pd.DataFrame(results, columns=columns)	 
+def format_scientific(series):
+    return series.apply(lambda x: '{:.2e}'.format(x)) 
 
 """ 
 	excersise2 function depending on the ODE to solve
@@ -74,14 +78,28 @@ def excersise2():
 		error_df = pd.concat([error_df, error_df_new_row], ignore_index=True)
 
 	result = rk4(f, t0, y0, T, steps[0], exact_sol) 
-		
-	print(error_df)
+	
 	plt.loglog(error_df.n, error_df["final_error"], marker='o', linestyle='', markersize=4)
 
 	plt.show()
 
-	plt.plot(result.t , result.exact)
-	plt.plot(result.t , result.y)
+	error_df["final_error"] = format_scientific(error_df["final_error"])
+		
+	
+
+	# Create a figure and a set of subplots
+	fig, ax = plt.subplots()
+
+	# Hide axes
+	ax.axis('off')
+
+	# Add a table at the bottom of the axes
+	the_table = plt.table(cellText=error_df.values,
+						colLabels=error_df.columns,
+						loc='center')
+
+	# Adjust layout to make room for the table:
+	plt.subplots_adjust(left=0.2, bottom=0.2)
 
 	plt.show()
 
