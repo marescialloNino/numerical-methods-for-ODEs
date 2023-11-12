@@ -13,23 +13,20 @@ accurate_final_solution = np.genfromtxt(open("exact_sol.csv"), delimiter=",", dt
 
 nx = 100
 
-# Create the grid
-# This might require a custom implementation depending on what numgrid('S', nx) does in your case
-# For now, let's assume it's a simple 2D grid
-x = np.linspace(0, 0, nx)
-y = np.linspace(0, 0, nx)
-# returns two matrices X = xy, Y = yx
-X, Y = np.meshgrid(x, y)
-
 # Compute the discrete Laplacian
-A = sp.diags([-1, -1, 4, -1, -1], [-nx, -1, 0, 1, nx], shape=((nx-2)**2, (nx-2)**2))
+A = -sp.diags([1, 1, -4, 1, 1], [-nx, -1, 0, 1, nx], shape=((nx-2)**2, (nx-2)**2))
 # Scale the matrix 
 A *= (nx - 1)**2
 
+#------------------------------------------------------TEST LAPLACIAN MATRIX-------------------------------------------
+""" A = sp.diags([-1, -1, 4, -1, -1], [-4, -1, 0, 1, 4], shape=(4*4,4*4))
+A_dense = A.toarray()
+print(A_dense) """
+#----------------------------------------------------------------------------------------------------------------------
 # Find the largest magnitude eigenvalue
 # Using 'LM' (Largest Magnitude) mode 
 lambda_, _ = spla.eigs(A, k=1, which='LM')
-lambda_ = -lambda_[0].real
+lambda_ = lambda_[0].real
 
 print("Largest magnitude eigenvalue:", lambda_)
 
@@ -37,6 +34,7 @@ print("Largest magnitude eigenvalue:", lambda_)
 h_RK = -2.78 / lambda_
 print(f'step size must be less then {h_RK:9.4e} for stability ')
 
+# number of rows in the matrix A
 n = A.shape[0]  
 y0 = np.ones(n)
 
