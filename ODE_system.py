@@ -12,11 +12,10 @@ from scipy.integrate import solve_ivp
 accurate_final_solution = np.genfromtxt(open("exact_sol.csv"), delimiter=",", dtype=float)
 
 nx = 100
-
 # Compute the discrete Laplacian
-A = -sp.diags([1, 1, -4, 1, 1], [-nx, -1, 0, 1, nx], shape=((nx-2)**2, (nx-2)**2))
+A = -(sp.diags([1, 1, -4, 1, 1], [-(nx-2), -1, 0, 1, (nx-2)], shape=((nx-2)**2, (nx-2)**2))*(nx - 1)**2)
 # Scale the matrix 
-A *= (nx - 1)**2
+#A *= (nx - 1)**2
 
 #------------------------------------------------------TEST LAPLACIAN MATRIX-------------------------------------------
 """ A = sp.diags([-1, -1, 4, -1, -1], [-4, -1, 0, 1, 4], shape=(4*4,4*4))
@@ -25,14 +24,15 @@ print(A_dense) """
 #----------------------------------------------------------------------------------------------------------------------
 # Find the largest magnitude eigenvalue
 # Using 'LM' (Largest Magnitude) mode 
+# spla.eigs() returns an array of eigenvalues (ordered by largest modulus)and one of eigenvectors
 lambda_, _ = spla.eigs(A, k=1, which='LM')
 lambda_ = lambda_[0].real
 
 print("Largest magnitude eigenvalue:", lambda_)
 
 # for stability h must be less then this limit value
-h_RK = -2.78 / lambda_
-print(f'step size must be less then {h_RK:9.4e} for stability ')
+h_max = -2.78 / lambda_
+print(f'step size must be less then {h_max:9.4e} for stability ')
 
 # number of rows in the matrix A
 n = A.shape[0]  
