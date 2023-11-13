@@ -3,6 +3,7 @@ import pandas as pd
 import time
 import scipy.sparse as sp
 import scipy.sparse.linalg as spla
+import matplotlib.pyplot as plt
 
 from scipy.sparse import eye
 from scipy.integrate import solve_ivp
@@ -30,10 +31,40 @@ lambda_ = lambda_[0].real
 
 print("Largest magnitude eigenvalue:", lambda_)
 
+
+#---------------------------------------------STABILITY-------------------------------------------
 # for stability h must be less then this limit value
 h_max = -2.78 / lambda_
 print(f'step size must be less then {h_max:9.4e} for stability ')
 
+""" # stability characteristic equation
+def R(z):
+    return 1 + z + 0.5*z**2 + (1/6)*z**3 + (1/24)*z**4
+
+# Create a grid of complex numbers
+re = np.linspace(-5, 5, 500)
+im = np.linspace(-5, 5, 500)
+Re, Im = np.meshgrid(re, im)
+Z = Re + 1j*Im
+
+# Evaluate the stability function
+R_Z = R(Z)
+
+# Identify points in the stability region
+stability_region = np.abs(R_Z) <= 1
+
+# Plot
+plt.figure(figsize=(8, 6))
+plt.pcolormesh(Re, Im, stability_region, shading='auto',cmap='gray_r')
+plt.title('Stability Region for 4th Order Runge-Kutta')
+plt.xlabel('Real')
+plt.ylabel('Imaginary')
+plt.colorbar(label='|R(z)|')
+plt.axis('equal')
+plt.grid()
+plt.show() """
+
+#-------------------------------------------------------------------------------------------------------------
 # number of rows in the matrix A
 n = A.shape[0]  
 y0 = np.ones(n)
