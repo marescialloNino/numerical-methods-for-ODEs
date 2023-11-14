@@ -12,11 +12,36 @@ from scipy.integrate import solve_ivp
 
 accurate_final_solution = np.genfromtxt(open("exact_sol.csv"), delimiter=",", dtype=float)
 
-nx = 100
+from scipy.sparse import diags, kron
+from scipy.sparse.linalg import spsolve
+
+def discrete_laplacian(n):
+    """Create a discrete Laplacian for a square grid of size n x n."""
+    # Create a 1D discrete Laplacian
+    laplacian_1d = diags([1, -2, 1], [-1, 0, 1], shape=(n, n))
+
+    # Create a 2D discrete Laplacian using the Kronecker product
+    I_n = diags([1], [0], shape=(n, n))
+    laplacian_2d = kron(laplacian_1d, I_n) + kron(I_n, laplacian_1d)
+
+    return laplacian_2d
+
+nx = 100  # grid size
+A = -discrete_laplacian(nx-2) * (nx - 1)**2  # scale the Laplacian
+
+
+
+
+
+
+
+
+
+""" nx = 100
 # Compute the discrete Laplacian
-A = -(sp.diags([1, 1, -4, 1, 1], [-(nx-2), -1, 0, 1, (nx-2)], shape=((nx-2)**2, (nx-2)**2))*(nx - 1)**2)
+A = -(sp.diags([1, 1, -4, 1, 1], [-(nx-1), -1, 0, 1, (nx-1)], shape=((nx-2)**2, (nx-2)**2))*(nx - 1)**2)
 # Scale the matrix 
-#A *= (nx - 1)**2
+ """
 
 #------------------------------------------------------TEST LAPLACIAN MATRIX-------------------------------------------
 """ A = sp.diags([-1, -1, 4, -1, -1], [-4, -1, 0, 1, 4], shape=(4*4,4*4))
@@ -92,7 +117,7 @@ err_ode45 = np.max(np.abs(sol.y[:, -1] - accurate_final_solution))
 print(err_ode45)
 
 # Display results
-run1 = ["run 1", "rk45", num_steps_ode45, CPU_time_ode45]
+run1 = ["run 1", "rk45", num_steps_ode45,err_ode45, CPU_time_ode45]
 print(run1)
 
 # ----------------------------------------------------Crank-Nicolson method------------------------------------------
@@ -103,17 +128,17 @@ err_CN = []
 y_start2 = []
 y_start3 = []
 
-for hi in h:
-    this_A = eye(n) + 0.5 * hi * A
+for step in h:
+    this_A = eye(n) + 0.5 * step * A
     # number of steps
-    N = round(0.1 / hi)
-    y_cn = np.zeros((n, N + 1))
+    N = round(0.1 / step)
+    y_cn = np.zeros((n, N))
     y_cn[:, 0] = y0
 
     tStart = time.time()
-    for i in range(N):
-        b = (eye(n) - 0.5 * hi * A) @ y_cn[:, i]
-        y_cn[:, i + 1], _ = spla.cg(this_A, b, tol=hi**3, maxiter=500)
+    for i in range(N-1):
+        b = (eye(n) - 0.5 * step * A) @ y_cn[:, i]
+        y_cn[:, i + 1], _ = spla.cg(this_A, b, tol=step**3, maxiter=500)
     tEnd = time.time()
 
     CPU_time_CN.append(tEnd - tStart)
@@ -127,18 +152,21 @@ CPU_time_BDF3 = []
 num_steps_BDF3 = []
 err_BDF3 = []
 
-for j, hi in enumerate(h):
-    N = round(0.1 / hi)
-    this_A = eye(n) + (6/11) * hi * A
-    y_bdf = np.zeros((n, N + 1))
+for step in h:
+
+    N = round(0.1 / step)
+    this_A = eye(n) + (6/11) * step * A
+    y_bdf = np.zeros((n, N+1))
+
+    j=0
     y_bdf[:, 0] = y0
     y_bdf[:, 1] = y_start2[j]
     y_bdf[:, 2] = y_start3[j]
-
+    j+=1
     tStart = time.time()
-    for i in range(1, N - 2):
+    for i in range(1, N - 3):
         b = (18/11) * y_bdf[:, i + 2] - (9/11) * y_bdf[:, i + 1] + (2/11) * y_bdf[:, i]
-        y_bdf[:, i + 3], _ = spla.cg(this_A, b, tol=hi**3, maxiter=500)
+        y_bdf[:, i + 3], _ = spla.cg(this_A, b, tol=step**3, maxiter=1000)
     tEnd = time.time()
 
     CPU_time_BDF3.append(tEnd - tStart)
