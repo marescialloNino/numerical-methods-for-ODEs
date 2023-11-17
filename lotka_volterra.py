@@ -10,13 +10,12 @@ def Lotka_Volterra(X,alpha,beta,gamma,delta):
     return Xdot
 
 
-
-'''
-Defining the Runge Kutta 4 Method for systems of ODEs, takes as parameters the function to estimate f,
-a vector X0 of the initial solution (for ODEs simply put a scalar), initial time t0,
-final time tf and stepsize h, the function returns a solution matrix X and a time array.
-'''
 def RK4(f, X0, t0, tf, h):
+    '''
+    Defining the Runge Kutta 4 Method for systems of ODEs, takes as parameters the function to estimate f,
+    a vector X0 of the initial solution (for ODEs simply put a scalar), initial time t0,
+    final time tf and stepsize h, the function returns a solution matrix X and a time array.
+    '''
     
     # create a time array from t0 to tf with stepsize h
     t = np.arange(t0, tf, h)
@@ -40,8 +39,6 @@ def RK4(f, X0, t0, tf, h):
     
     return X, t
     
-
-
 # Defining the problem
 t0 = 0                                
 tf = 300
@@ -59,8 +56,6 @@ X0 = np.array([x0,y0])                                               # initial c
 X, t = RK4(f, X0, t0, tf, h)
 
 # Plotting the Results
-
-
 plt.plot(t, X[0,:], "r", label="Rabbits")
 plt.plot(t, X[1,:], "b", label="Foxes")
 plt.xlabel("Time (t)")

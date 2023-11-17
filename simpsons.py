@@ -3,18 +3,16 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 
-
-
-""" 
-	method to solve the problem dy/dt = -5y ; y(0) = 1.
-	Simpson equation can be solved explicitly as the test function is linear.
-	t --> initial time
-	y0 --> initial value
-	y1 --> second initial value
-	T --> final time
-	h --> stepsize
-"""
 def simpsons(t, y0, y1, T, h ):
+		""" 
+		method to solve the problem dy/dt = -5y ; y(0) = 1.
+		Simpson equation can be solved explicitly as the test function is linear.
+		t --> initial time
+		y0 --> initial value
+		y1 --> second initial value
+		T --> final time
+		h --> stepsize
+		"""
 		
 		f = lambda t, y: -5*y
 		sol = lambda t: exp(-5*t)

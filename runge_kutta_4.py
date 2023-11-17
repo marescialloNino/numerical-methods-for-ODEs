@@ -3,7 +3,10 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
 
-'''
+
+def rk4(f, t, y, T, h, sol = None):
+	
+	'''
 	Definition of Runge Kutta 4 stages method for ODEs (not systems of ODEs)
  	This function takes as parameters:
  	f --> f(t,y)=dy/dt
@@ -13,32 +16,29 @@ import numpy as np
 	T --> final time T
  	h --> stepsize 
 	The function returns a dataframe with 4 columns : tn, yn, y(tn), error
-'''
+	'''
+	# n: number of steps
+	n = int((T-t)/h)
+	# define array to store data
+	results = []
 
-def rk4(f, t, y, T, h, sol = None):
-	
-		# n: number of steps
-		n = int((T-t)/h)
-		# define array to store data
-		results = []
-
-		# loop to calculate the values of the parameters k at each step
-		for i in range(n):
-			k1 = h*f(t, y)
-			k2 = h*f(t + h/2, y + k1/2)
-			k3 = h*f(t + h/2, y + k2/2)
-			k4 = h*f(t + h, y + k3)
-			y = y + (k1 + 2*k2 + 2*k3 + k4)/6
-			t += h
-			# if analytical solution is given --> compare estimate ad exact solution
-			if sol is not None:
-				actual = sol(t)
-				error = abs(actual - y)
-				
-				results.append([t, y, actual, error])
-			# if not, just estimate the solution
-			else:
-				results.append([t, y])		
+	# loop to calculate the values of the parameters k at each step
+	for i in range(n):
+		k1 = h*f(t, y)
+		k2 = h*f(t + h/2, y + k1/2)
+		k3 = h*f(t + h/2, y + k2/2)
+		k4 = h*f(t + h, y + k3)
+		y = y + (k1 + 2*k2 + 2*k3 + k4)/6
+		t += h
+		# if analytical solution is given --> compare estimate ad exact solution
+		if sol is not None:
+			actual = sol(t)
+			error = abs(actual - y)
+			
+			results.append([t, y, actual, error])
+		# if not, just estimate the solution
+		else:
+			results.append([t, y])		
 
 		if sol is not None:
 			columns = ["t", "y", "exact", "error"]
@@ -49,13 +49,13 @@ def rk4(f, t, y, T, h, sol = None):
 def format_scientific(series):
     return series.apply(lambda x: '{:.2e}'.format(x)) 
 
-""" 
+
+def excersise2():
+	""" 
 	excersise2 function depending on the ODE to solve
 	returns an error dataframe and a log log plot of the final error
- 	in function of the number of steps n
-"""
-def excersise2():
-
+	in function of the number of steps n
+	"""
 	# Define these functions depending on the problem to solve.
 	f = lambda t, y: -10*(y**2)
 	exact_sol= lambda t: 1/(10*t + 1)
