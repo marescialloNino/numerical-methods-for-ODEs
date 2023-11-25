@@ -70,7 +70,7 @@ Since the test equation (1) is linear, it's possible to manipulate Simpson's for
 \label{fig:simpson_error}
 \end{figure}
 According to theory, in all cases the method is non stable, as the absolute stability region for Simpson's method is empty.
-In fact, I had to make a different figure for the solution computed using forward Euler estimation for the first step, since the error as the difference between estimate and exact solution is three orders of magnitude larger, and it was impossible to appreciate the behaviour of the other cases considered.
+I had to make a different figure for the solution computed using forward Euler estimation for the first step, since the error as the difference between estimate and exact solution is three orders of magnitude larger then the other two, and it was impossible to appreciate the behaviour of the other cases considered.
 
 \section{Exercise 2}
 
@@ -106,31 +106,32 @@ Compute the solution using the 4 stage Runge-Kutta method (4); consider the step
 \end{tabular}
 \\[5pt]
 
-Runge-Kutta 4 stages is a method with order of convergence 4, in accordance with the theory , halving the step size the error decrease by roughly a factor 16. 
+The data presented in the table are in accordance with the theory,
+Runge-Kutta 4 stages is a method with order of convergence 4, thus , halving the step size, the error should decrease by a factor $2^4$. 
 
 \section{Exercise 3}
 
-Given two approximations $y_{n+1}^{(h)}$ and $y_{n+2}^{(h/2)}$, which are the solutions at $t_{n+1}$ using step sizes $h$ and $h/2$ respectively, computed with the 4-stages Runge-Kutta method. Assuming that the local truncation error is $C_nh^4$ with $C_n$ depending on the derivatives of $y$, develop a formula for the Richardson extrapolation.
+Given two approximations $y_{n+1}^{(h)}$ and $y_{n+2}^{(h/2)}$, which are the solutions at $t_{n+1}$ using step sizes $h$ and $h/2$ respectively, computed with the 4-stages Runge-Kutta method. Assuming that the local truncation error is $C_nh^5$ with $C_n$ depending on the derivatives of $y$, develop a formula for the Richardson extrapolation.
 
 The Richardson Extrapolation formula is:
 \begin{equation}
     R(h) = \frac{2^p y(h/2) - y(h)}{2^p - 1}
 \end{equation}
 
-For the 4-stage Runge-Kutta method, we assume the error to be $C_nh^4$, hence $p = 4$. Applying this to our approximations, we get:
+For the 4-stage Runge-Kutta method, we assume the error to be $C_nh^5$, hence $p = 5$. Applying this to our approximations, we get:
 
 \begin{equation}
-    R(h) = \frac{2^4 y_{n+2}^{(h/2)} - y_{n+1}^{(h)}}{2^4 - 1}
+    R(h) = \frac{2^5 y_{n+2}^{(h/2)} - y_{n+1}^{(h)}}{2^5 - 1}
 \end{equation}
 
 Simplifying the expression, we obtain:
 
 \begin{equation}
-    R(h) = \frac{16 y_{n+2}^{(h/2)} - y_{n+1}^{(h)}}{15}
+    R(h) = \frac{32 y_{n+2}^{(h/2)} - y_{n+1}^{(h)}}{31}
 \end{equation}
 
 This formula provides an extrapolated estimate of the solution at $t_{n+1}$ with a higher order of accuracy than either $y_{n+1}^{(h)}$ or $y_{n+2}^{(h/2)}$ alone.
-The error in this extrapolated estimate will be of order $O(h^5)$, assuming the error in the original method is $O(h^4)$.
+The error in this extrapolated estimate will be of order $O(h^6)$, assuming the error in the original method is $O(h^5)$.
 
 
 
@@ -226,7 +227,7 @@ Substituting the expression for \( t_{12} \) into the inequality gives us:
 \left| \frac{2 \pm \sqrt{1 + 2h}}{3 - 2h} \right| \leq 1
 \]
 
-In this case $t_1 \in [\frac{1}{2},1) and t_2 \in (\frac{1}{3},\frac{1}{2}] $, both root have always modulus < 1.
+In this case $t_1 \in [\frac{1}{2},1)$ and $t_2 \in (\frac{1}{3},\frac{1}{2}] $, both roots have always modulus $<1$.
 
 \subsubsection*{Case 2: Complex Roots}
 
@@ -255,7 +256,20 @@ The solution of this equation is:
  \begin{equation}
 \mathbf{y}(t) = e^{-tA}\mathbf{y_0}
 \end{equation}
-Where A is the 2D discrete Laplacian of a square grid, I implemented a python function to build this matrix given the dimension nx of the grid, building first the simpler 1D Laplacian, and using the relations with the Kronecker product to obtain the 2D Laplacian.
+Where A is the 2D discrete Laplacian of a square grid. 
+I implemented a python function to build this matrix, since unlike in Matlab, there is no built in functions to do this.
+Given the dimension nx of the grid, I first the simpler 1D Laplacian, and then used the relations with the Kronecker product to obtain the 2D Laplacian, I report the function:
+
+\begin{verbatim}
+def discrete_laplacian(n):
+
+    laplacian_1d = diags([1, -2, 1], [-1, 0, 1], shape=(n, n))
+
+    I_n = diags([1], [0], shape=(n, n))
+    laplacian_2d = kron(laplacian_1d, I_n) + kron(I_n, laplacian_1d)
+
+    return laplacian_2d
+\end{verbatim}
 
 \subsection*{Stability}
 We had to compute the interval of absolute stability of the 4th order Runge-Kutta method for this problem.
@@ -284,6 +298,13 @@ BDF3 & 1000 & $7.2624*10^{-10}$ & 1.133  \\ \hline
 BDF3 & 10000 & $2.2578*10^{-12}$ & 11.345  \\ \hline
 \hline
 \end{tabular}
+\\[12pt]
+
+Since the step size decreases each time of one order of magnitude, in theory, the errors
+should decrease each time of two orders of magnitude for CN, being a second order method,
+and three orders of magnitude for BDF3, being a third order method. 
+The results are not exactly decreasing at this rate but they are sufficiently
+accurate.
 
 \section{Exercise 6}
 
@@ -307,9 +328,5 @@ Solve the IVP using Runge-Kutta 4 stages method, with parameters $\alpha = 0.2 ,
 \label{fig:lotka_volterra_solution}
 \end{figure}
 
-
-% Uncomment the following two lines if you have references
-%\bibliography{your_bib_file}
-%\bibliographystyle{ieeetr}
 
 \end{document}
